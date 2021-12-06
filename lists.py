@@ -31,3 +31,23 @@ codes = [229144, 253687, 238577, 236509,
          193984, 76119, 107180, 110900,
          115641, 230053, 139808, 265567,
          157355, 284902, 250431]
+
+
+holomem = ['sora', 'miko', 'fubuki', 'matsuri', 'mel', 'haachama', 'aki', 'aqua', 'choco', 'ayame', 'shion', 'subaru',
+           'mio', 'okayu', 'korone', 'flare', 'noel', 'marine', 'pekora', 'rushia', 'suisei', 'kanata', 'watame',
+           'towa', 'luna', 'lamy', 'nene', 'botan', 'polka', #'laplus',
+            'lui', 'koyori', 'chloe', 'iroha']
+
+tags = ['tokino_sora highres rating:safe', 'sakura_miko highres rating:safe', 'shirakami_fubuki highres rating:safe',
+        'natsuiro_matsuri highres rating:safe', 'yozora_mel highres rating:safe', 'akai_haato highres rating:safe',
+        'aki_rosenthal highres rating:safe', 'minato_aqua highres rating:safe', 'yuzuki_choco highres rating:safe',
+        'nakiri_ayame highres rating:safe', 'murasaki_shion highres rating:safe', 'oozora_subaru highres rating:safe',
+        'ookami_mio highres rating:safe', 'nekomata_okayu highres rating:safe', 'inugami_korone highres rating:safe',
+        'shiranui_flare highres rating:safe', 'shirogane_noel highres rating:safe',
+        'houshou_marine highres rating:safe', 'usada_pekora highres rating:safe', 'uruha_rushia highres rating:safe',
+        'hoshimachi_suisei highres rating:safe', 'amane_kanata highres rating:safe',
+        'tsunomaki_watame highres rating:safe', 'tokoyami_towa highres rating:safe',
+        'himemori_luna highres rating:safe', 'yukihana_lamy highres rating:safe', 'momosuzu_nene highres rating:safe',
+        'shishiro_botan highres rating:safe', 'omaru_polka highres rating:safe',# 'lap+_darkness highres rating:safe',
+        'takane_lui highres rating:safe', 'hakui_koyori highres rating:safe', 'sakamata_chloe highres rating:safe',
+        'kazama_iroha highres rating:safe']

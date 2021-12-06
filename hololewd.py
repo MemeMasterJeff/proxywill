@@ -7,8 +7,9 @@ import os.path
 import urllib.parse
 # from xml.dom import minidom
 import html
+import lists
 
-TAGS_TO_CHECK = ["nekomata_okayu highres rating:safe", "inugami_korone highres rating:safe"]
+TAGS_TO_CHECK = lists.tags
 # Increase or reduce this depending on how often the cronjob runs... Default is 24
 NUM_POSTS_TO_CHECK = 24
 WEBHOOK_URL = "https://discord.com/api/webhooks/914695501050437703/Jq5J_CoDEqYmiMRD6fNUJgsz0fvAbZyC3h58vLjKKhfQFDievo1guDTAMIJKWTBoRXI5"

@@ -1,7 +1,7 @@
 import discord
 import random
 import os
-from lists import codes
+from lists import codes, holomem
 from discord import Embed
 from discord.ext import commands
 import hololewd
@@ -15,9 +15,10 @@ intents.guilds = True
 bot = commands.Bot(command_prefix='$')
 bot.remove_command('help')
 
-okayu = json.load(open("nekomata_okayu_highres_rating_safe.json"))
-korone = json.load(open("inugami_korone_highres_rating_safe.json"))
+HOLOJSONS = {}
 
+for x, y in zip(holomem, hololewd.TAGS_TO_CHECK):
+    HOLOJSONS[x] = json.load(open(f"{y.replace(' ', '_').replace(':', '_')}.json"))
 
 @bot.event
 async def on_ready():
@@ -83,7 +84,11 @@ async def message(ctx, target: discord.User, message):
         if target.dm_channel is None:
             await target.create_dm()
         await target.dm_channel.send(message)
-        await ctx.channel.send('message sent!')
+        await ctx.channel.send('message sent!', delete_after=3.0)
+        try:
+            await ctx.message.delete()
+        except:
+            await ctx.channel.send('failed to remove evidence!', delete_after=5.0)
     except:
         await ctx.channel.send("messaged failed to deliver")
 
@@ -160,13 +165,17 @@ async def stallman(ctx):
 
 
 @bot.command()
-async def testing(ctx, chara=None):
-    if chara is None:
+async def live(ctx, spec=None):
+    chara = spec.lower()
+    if spec is None:
         await ctx.channel.send("pls use a parameter!")
-    elif chara.lower() == "okayu":
-        await ctx.channel.send(okayu[random.randrange(len(okayu))]["file_url"])
-    elif chara.lower() == "korone":
-        await ctx.channel.send(korone[random.randrange(len(korone))]["file_url"])
+    elif chara in HOLOJSONS:
+        await ctx.channel.send(HOLOJSONS[chara][random.randrange(len(HOLOJSONS[chara]))]["file_url"])
+        embedvar: Embed = discord.Embed(title=HOLOJSONS[chara][random.randrange(len(HOLOJSONS[chara]))]['source'], color=0xFF5733)
+        await ctx.channel.send(embed=embedvar)
+    elif chara == "refresh":
+        await ctx.channel.send('this is supposed to manually run the cronjob, but idk how to rn')
+        print("placeholder")
     else:
         await ctx.channel.send("no such character available sadly")
 
