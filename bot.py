@@ -4,14 +4,19 @@ import os
 from lists import codes
 from discord import Embed
 from discord.ext import commands
+import hololewd
+import json
 
 token = open("token.txt", "r").readline()
 intents = discord.Intents.default()
 intents.members = True
 intents.messages = True
 intents.guilds = True
-
 bot = commands.Bot(command_prefix='$')
+bot.remove_command('help')
+
+okayu = json.load(open("nekomata_okayu_highres_rating_safe.json"))
+korone = json.load(open("inugami_korone_highres_rating_safe.json"))
 
 
 @bot.event
@@ -28,15 +33,20 @@ async def bonk(ctx):
 
 
 @bot.command()
-async def sins(ctx):
-    path = random.choice(os.listdir('E:/Pictures/sins/'))
-    await ctx.channel.send(file=discord.File("E:/Pictures/sins/" + path))
+async def sins(ctx, spec=None):
+    if spec is None:
+        path = random.choice(os.listdir('E:/Pictures/sins/'))
+        await ctx.channel.send(file=discord.File("E:/Pictures/sins/" + path))
+    if spec == "holo":
+        path = random.choice(os.listdir('E:/Pictures/sins/hololive/'))
+        await ctx.channel.send(file=discord.File("E:/Pictures/sins/hololive/" + path))
 
 
 @bot.command()
 async def nsfw(ctx):
     path = random.choice(os.listdir('D:/cache/cache/'))
     print(path)
+    print(ctx.author)
     if isinstance(ctx.channel, discord.channel.DMChannel) is True or ctx.channel.is_nsfw() is True:
         await ctx.channel.send(f"http://69.136.183.114/cache/cache/{path}")
     else:
@@ -46,8 +56,9 @@ async def nsfw(ctx):
 @bot.command()
 async def commands(ctx):
     embedvar: Embed = discord.Embed(title="Available commands:", color=0xFF5733)
-    embedvar.add_field(name='bonk', value='sends anti-horny copypasta', inline=False)
-    embedvar.add_field(name='sins', value="sends an image from my sins folder (sfw)", inline=False)
+    embedvar.add_field(name='sins',
+                       value="sends an image from my sins folder (sfw)\n\tuse holo suffix for hololive only",
+                       inline=False)
     embedvar.add_field(name="nsfw",
                        value="sends an image from the special folder (nsfw) - only useable in nsfw channels due to "
                              "complaints",
@@ -58,6 +69,11 @@ async def commands(ctx):
                        inline=False)
     embedvar.add_field(name='launchcodes',
                        value='selects a "special" code provided by @K-01#9545 - also only useable in nsfw channels')
+    embedvar.add_field(name="copypastas(i'll probably make this server customizeable like carl-bot someday)",
+                       value="copypastas requested\n", inline=False)
+    embedvar.add_field(name='bonk', value='sends anti-horny copypasta', inline=False)
+    embedvar.add_field(name='cum', value='the "infinite cum" copypasta highly requested by @K-01#9545')
+    embedvar.add_field(name='stallman', value='the infamous GNU/Linux copypasta')
     await ctx.channel.send(embed=embedvar)
 
 
@@ -143,4 +159,24 @@ async def stallman(ctx):
                            "so-called Linux distributions are really distributions of GNU/Linux!")
 
 
+@bot.command()
+async def testing(ctx, chara=None):
+    if chara is None:
+        await ctx.channel.send("pls use a parameter!")
+    elif chara.lower() == "okayu":
+        await ctx.channel.send(okayu[random.randrange(len(okayu))]["file_url"])
+    elif chara.lower() == "korone":
+        await ctx.channel.send(korone[random.randrange(len(korone))]["file_url"])
+    else:
+        await ctx.channel.send("no such character available sadly")
+
+@bot.command()
+async def servers(ctx):
+    activeservers = bot.guilds
+    if ctx.author.id == 553733002719395850:
+        for guild in activeservers:
+            await ctx.send(guild.name)
+            print(guild.name)
+    else:
+        await ctx.send('this command is only available for the bot owner')
 bot.run(token)
