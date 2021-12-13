@@ -35,8 +35,9 @@ codes = [229144, 253687, 238577, 236509,
 
 holomem = ['sora', 'miko', 'fubuki', 'matsuri', 'mel', 'haachama', 'aki', 'aqua', 'choco', 'ayame', 'shion', 'subaru',
            'mio', 'okayu', 'korone', 'flare', 'noel', 'marine', 'pekora', 'rushia', 'suisei', 'kanata', 'watame',
-           'towa', 'luna', 'lamy', 'nene', 'botan', 'polka', #'laplus',
-            'lui', 'koyori', 'chloe', 'iroha']
+           'towa', 'luna', 'lamy', 'nene', 'botan', 'polka',
+            'lui', 'koyori', 'chloe', 'iroha', 'mumei', 'ui', 'ame', 'calli', 'kiara', 'fauna', 'kronii',
+           'sana', 'baelz', 'gura']
 
 tags = ['tokino_sora highres rating:safe', 'sakura_miko highres rating:safe', 'shirakami_fubuki highres rating:safe',
         'natsuiro_matsuri highres rating:safe', 'yozora_mel highres rating:safe', 'akai_haato highres rating:safe',
@@ -48,6 +49,11 @@ tags = ['tokino_sora highres rating:safe', 'sakura_miko highres rating:safe', 's
         'hoshimachi_suisei highres rating:safe', 'amane_kanata highres rating:safe',
         'tsunomaki_watame highres rating:safe', 'tokoyami_towa highres rating:safe',
         'himemori_luna highres rating:safe', 'yukihana_lamy highres rating:safe', 'momosuzu_nene highres rating:safe',
-        'shishiro_botan highres rating:safe', 'omaru_polka highres rating:safe',# 'lap+_darkness highres rating:safe',
+        'shishiro_botan highres rating:safe', 'omaru_polka highres rating:safe',
         'takane_lui highres rating:safe', 'hakui_koyori highres rating:safe', 'sakamata_chloe highres rating:safe',
-        'kazama_iroha highres rating:safe']
+        'kazama_iroha highres rating:safe', 'nanashi_mumei highres rating:safe', 'shigure_ui highres rating:safe',
+        'amelia_watson highres rating:safe', 'calliope_mori highres rating:safe', 'takanashi_kiara highres rating:safe',
+        'ceres_fauna highres rating:safe','ouro_kronii highres rating:safe', 'tsukumo_sana highres rating:safe',
+        'hakos_baelz highres rating:safe', 'gawr_gura highres rating:safe']
+special_tags = ['la%2B_darknesss highres rating:safe',  'ninomae_ina%27nis highres rating:safe']
+special_mems = ['ina', 'laplus']

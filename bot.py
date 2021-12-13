@@ -1,10 +1,10 @@
 import discord
 import random
 import os
-from lists import codes, holomem
+from lists import codes, holomem, tags, special_mems
 from discord import Embed
 from discord.ext import commands
-import hololewd
+from hololewd import get_gelImage
 import json
 
 token = open("token.txt", "r").readline()
@@ -17,13 +17,35 @@ bot.remove_command('help')
 
 HOLOJSONS = {}
 
-for x, y in zip(holomem, hololewd.TAGS_TO_CHECK):
+for x, y in zip(holomem, tags):
     HOLOJSONS[x] = json.load(open(f"{y.replace(' ', '_').replace(':', '_')}.json"))
 
 @bot.event
 async def on_ready():
     print('we have logged in as {0.user}'.format(bot))
 
+@bot.command()
+async def cmds(ctx):
+    embedvar: Embed = discord.Embed(title="Available commands:", color=0xFF5733)
+    embedvar.add_field(name='sins',
+                       value="sends an image from my sins folder (sfw)\n\tuse holo suffix for hololive only",
+                       inline=False)
+    embedvar.add_field(name="nsfw",
+                       value="sends an image from the special folder (nsfw) - only useable in nsfw channels due to "
+                             "complaints",
+                       inline=False)
+    embedvar.add_field(name="message",
+                       value='format as [userid "content to send"] please. If ur message is multiple words, put them'
+                             ' all in quotations.',
+                       inline=False)
+    embedvar.add_field(name='launchcodes',
+                       value='selects a "special" code provided by @K-01#9545 - also only useable in nsfw channels')
+    embedvar.add_field(name="copypastas(i'll probably make this server customizeable like carl-bot someday)",
+                       value="copypastas requested\n", inline=False)
+    embedvar.add_field(name='bonk', value='sends anti-horny copypasta', inline=False)
+    embedvar.add_field(name='cum', value='the "infinite cum" copypasta highly requested by @K-01#9545')
+    embedvar.add_field(name='stallman', value='the infamous GNU/Linux copypasta')
+    await ctx.channel.send(embed=embedvar)
 
 @bot.command()
 async def bonk(ctx):
@@ -52,30 +74,6 @@ async def nsfw(ctx):
         await ctx.channel.send(f"http://69.136.183.114/cache/cache/{path}")
     else:
         await ctx.channel.send('Use this command in an nsfw channel my guy')
-
-
-@bot.command()
-async def commands(ctx):
-    embedvar: Embed = discord.Embed(title="Available commands:", color=0xFF5733)
-    embedvar.add_field(name='sins',
-                       value="sends an image from my sins folder (sfw)\n\tuse holo suffix for hololive only",
-                       inline=False)
-    embedvar.add_field(name="nsfw",
-                       value="sends an image from the special folder (nsfw) - only useable in nsfw channels due to "
-                             "complaints",
-                       inline=False)
-    embedvar.add_field(name="message",
-                       value='format as [userid "content to send"] please. If ur message is multiple words, put them'
-                             ' all in quotations.',
-                       inline=False)
-    embedvar.add_field(name='launchcodes',
-                       value='selects a "special" code provided by @K-01#9545 - also only useable in nsfw channels')
-    embedvar.add_field(name="copypastas(i'll probably make this server customizeable like carl-bot someday)",
-                       value="copypastas requested\n", inline=False)
-    embedvar.add_field(name='bonk', value='sends anti-horny copypasta', inline=False)
-    embedvar.add_field(name='cum', value='the "infinite cum" copypasta highly requested by @K-01#9545')
-    embedvar.add_field(name='stallman', value='the infamous GNU/Linux copypasta')
-    await ctx.channel.send(embed=embedvar)
 
 
 @bot.command()
@@ -166,18 +164,45 @@ async def stallman(ctx):
 
 @bot.command()
 async def live(ctx, spec=None):
-    chara = spec.lower()
+    tags = spec
+    chara = spec.lower().replace(' ', '+')
+    print(chara)
     if spec is None:
         await ctx.channel.send("pls use a parameter!")
-    elif chara in HOLOJSONS:
-        await ctx.channel.send(HOLOJSONS[chara][random.randrange(len(HOLOJSONS[chara]))]["file_url"])
-        embedvar: Embed = discord.Embed(title=HOLOJSONS[chara][random.randrange(len(HOLOJSONS[chara]))]['source'], color=0xFF5733)
-        await ctx.channel.send(embed=embedvar)
+    elif chara in holomem or chara in special_mems:
+        # these two are exceptions because cover decided to give them names with special characters
+        if chara == "laplus":
+            laplus = json.load(open('la_2B_darknesss_highres_rating_safe.json'))
+            await ctx.channel.send(laplus[random.randrange(len(laplus))]["file_url"])
+            embedvar: Embed = discord.Embed(title=laplus[random.randrange(len(laplus))]["source"], color=0xFF5733)
+            await ctx.channel.send(embed=embedvar)
+        elif chara == 'ina':
+            ina = json.load(open('ninomae_ina_27nis_highres_rating_safe.json'))
+            await ctx.channel.send(ina[random.randrange(len(ina))]["file_url"])
+            embedvar: Embed = discord.Embed(title=ina[random.randrange(len(ina))]["source"], color=0xFF5733)
+            await ctx.channel.send(embed=embedvar)
+        else:
+            # main list prowler
+            await ctx.channel.send(HOLOJSONS[chara][random.randrange(len(HOLOJSONS[chara]))]["file_url"])
+            embedvar: Embed = discord.Embed(title=HOLOJSONS[chara][random.randrange(len(HOLOJSONS[chara]))]['source'], color=0xFF5733)
+            await ctx.channel.send(embed=embedvar)
     elif chara == "refresh":
         await ctx.channel.send('this is supposed to manually run the cronjob, but idk how to rn')
         print("placeholder")
     else:
-        await ctx.channel.send("no such character available sadly")
+        """Calls get_gelImage() with tags specified by user, then sends an image."""
+        if "rq" in tags or "re" in tags:
+            if isinstance(ctx.channel,
+                          discord.channel.DMChannel) or ctx.channel.is_nsfw():# check if channel is for given rating
+                img = get_gelImage(tags)
+                return await ctx.send(img)
+
+            else:
+                message = "For rating questionable or explicit NSFW channel is required!"
+                return await ctx.send(message)
+
+        img = get_gelImage(tags)
+        await ctx.send(img)
 
 @bot.command()
 async def servers(ctx):

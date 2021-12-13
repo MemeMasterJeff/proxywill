@@ -8,8 +8,9 @@ import urllib.parse
 # from xml.dom import minidom
 import html
 import lists
+import random
 
-TAGS_TO_CHECK = lists.tags
+TAGS_TO_CHECK = lists.tags + lists.special_tags
 # Increase or reduce this depending on how often the cronjob runs... Default is 24
 NUM_POSTS_TO_CHECK = 24
 WEBHOOK_URL = "https://discord.com/api/webhooks/914695501050437703/Jq5J_CoDEqYmiMRD6fNUJgsz0fvAbZyC3h58vLjKKhfQFDievo1guDTAMIJKWTBoRXI5"
@@ -24,6 +25,7 @@ def slugify(value):
 # Returns number of new posts, number of removed posts.
 def getNumNewPosts(oldJson, latestJson):
     for j in range(NUM_POSTS_TO_CHECK):
+        print(j)
         oldLatestPost = oldJson[j]
         # if it reaches the end of the for loop then all posts are new
         # "What if there more than 24 posts an hour"? Idk maybe don't do that
@@ -37,6 +39,47 @@ def getNumNewPosts(oldJson, latestJson):
         print("Couldn't find the last saved post, trying the next last saved post...")
     print("Failed to find any posts. Giving up and posting them all.")
     return NUM_POSTS_TO_CHECK, 0
+
+def get_gelImage(tags):
+    """Returns pictures from Gelbooru with given tags."""
+    formatted_tags = ""
+    rating = ""
+    tags = list(tags)
+    ratings = {
+        "re": "rating%3aexplicit",
+        "rq": "rating%3aquestionable",
+        "rs": "rating%3asafe"
+    }
+
+    if tags:  # if there are any tags, check for ratings
+        for tag in tags:
+            #print(tag)
+            if tag in ratings:
+                rating = ratings[tag]
+                tags.remove(tag)
+                print(tags)
+
+    if rating == "":  # if rating wasn't specified, set safe one
+        rating = ratings["rs"]
+
+    # make tags suitable for Gelbooru API url
+    formatted_tags = ' '.join(tags).replace(" ", "+")
+
+    print(rating, formatted_tags)
+
+    api_url = f"https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&tags={formatted_tags}+{rating}"
+    print(api_url)
+    response = requests.get(api_url)
+    # parsing json
+    json_api_url = json.loads(response.text)
+    print(json_api_url)
+    # verify if there is anything within given tags
+    if json_api_url:
+        image = random.choice(json_api_url)["file_url"]
+        return image
+    else:
+        return "No results with given tags or they are incorrect."
+
 
 
 print(datetime.datetime.now())
@@ -68,31 +111,34 @@ for tag in TAGS_TO_CHECK:
     with open(fileName, "w") as f:
         f.write(r.text)
     print("Number of new posts: " + str(newPosts))
-    for i in range(newPosts):
-        post = latestJson[i]
 
-        description = "\n[Source](" + html.unescape(post['source']) + ")"
-        # description = post['tags']
-        if i == 0 and numRemovedPosts > 1:
-            description += "\nNote: The last post before this one was removed from this subreddit!"
+def spam():
+    for tag in TAGS_TO_CHECK:
+        for i in range(newPosts):
+            post = latestJson[i]
 
-        dataToSend = {
-            "username": tag,
-            "embeds": [{
-                "title": tag,
-                "description": description,
-                "url": "https://gelbooru.com/index.php?page=post&s=view&id=" + str(post['id'])
-            }]
-        }
-        if post['file_url'].endswith(('.jpg', '.jpeg', '.png', '.gif')):
-            dataToSend['embeds'][0]["image"] = {
-                "url": post['file_url']
+            description = "\n[Source](" + html.unescape(post['source']) + ")"
+            # description = post['tags']
+            if i == 0 and numRemovedPosts > 1:
+                description += "\nNote: The last post before this one was removed from this subreddit!"
+
+            dataToSend = {
+                "username": tag,
+                "embeds": [{
+                    "title": tag,
+                    "description": description,
+                    "url": "https://gelbooru.com/index.php?page=post&s=view&id=" + str(post['id'])
+                }]
             }
-        else:
-            dataToSend['embeds'][0]["image"] = {
-                "url": post['preview_url']
-            }
-        r = requests.post(
-            WEBHOOK_URL,
-            json=dataToSend
-        )
+            if post['file_url'].endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                dataToSend['embeds'][0]["image"] = {
+                    "url": post['file_url']
+                }
+            else:
+                dataToSend['embeds'][0]["image"] = {
+                    "url": post['preview_url']
+                }
+            r = requests.post(
+                WEBHOOK_URL,
+                json=dataToSend
+            )
